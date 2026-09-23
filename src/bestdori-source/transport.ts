@@ -7,14 +7,7 @@ export const isBestdoriServer = (value: unknown): value is BestdoriServer =>
   typeof value === "string" && (BESTDORI_SERVERS as readonly string[]).includes(value);
 
 const normalizedLocaleSegments = (value: unknown): readonly string[] =>
-  typeof value === "string"
-    ? value
-        .trim()
-        .replaceAll("_", "-")
-        .toLowerCase()
-        .split("-")
-        .filter(Boolean)
-    : [];
+  typeof value === "string" ? value.trim().replaceAll("_", "-").toLowerCase().split("-").filter(Boolean) : [];
 
 /**
  * Resolve a UI/content locale to the Bestdori server that owns that language.
@@ -23,9 +16,7 @@ const normalizedLocaleSegments = (value: unknown): readonly string[] =>
  * region. Bare Bestdori server ids are accepted so hosts can forward persisted
  * source metadata through the same boundary.
  */
-export const bestdoriServerForLocale = (
-  locale: unknown,
-): BestdoriServer | undefined => {
+export const bestdoriServerForLocale = (locale: unknown): BestdoriServer | undefined => {
   const segments = normalizedLocaleSegments(locale);
   const language = segments[0];
   if (!language) return undefined;
@@ -35,11 +26,7 @@ export const bestdoriServerForLocale = (
   if (language !== "zh") return undefined;
   if (segments.includes("hant")) return "tw";
   if (segments.includes("hans")) return "cn";
-  return segments.some(
-    (segment) => segment === "tw" || segment === "hk" || segment === "mo",
-  )
-    ? "tw"
-    : "cn";
+  return segments.some((segment) => segment === "tw" || segment === "hk" || segment === "mo") ? "tw" : "cn";
 };
 
 export interface ResolveBestdoriServerOptions {
@@ -56,9 +43,7 @@ export const resolveBestdoriServer = ({
   locale,
   fallback = "jp",
 }: ResolveBestdoriServerOptions = {}): BestdoriServer =>
-  isBestdoriServer(server)
-    ? server
-    : (bestdoriServerForLocale(locale) ?? fallback);
+  isBestdoriServer(server) ? server : (bestdoriServerForLocale(locale) ?? fallback);
 
 export interface BestdoriTransportRequest {
   /** Asset/API path relative to the transport's configured Bestdori origin. */

@@ -5,18 +5,9 @@ import {
   type AltairFormatContribution,
   type AltairSourceFile,
 } from "@haneoka/altair/plugins";
-import {
-  altairBestdoriAssetService,
-  type AltairBestdoriAssetService,
-} from "./assets.js";
-import {
-  createAltairBestdoriResourceProvider,
-  type AltairBestdoriResourceProviderOptions,
-} from "./provider.js";
-import {
-  importBestdoriScenario,
-  serializeBestdoriScenario,
-} from "./story-project.js";
+import { altairBestdoriAssetService, type AltairBestdoriAssetService } from "./assets.js";
+import { createAltairBestdoriResourceProvider, type AltairBestdoriResourceProviderOptions } from "./provider.js";
+import { importBestdoriScenario, serializeBestdoriScenario } from "./story-project.js";
 
 export {
   importBestdoriScenario,
@@ -31,21 +22,15 @@ export * from "./source.js";
 
 export const ALTAIR_BESTDORI_PLUGIN_ID = "haneoka.altair-bestdori" as const;
 export const ALTAIR_BESTDORI_FORMAT_ID = "bestdori-scenario" as const;
-export const ALTAIR_BESTDORI_ASSET_SERVICE =
-  defineAltairService<AltairBestdoriAssetService>(
-    "haneoka.altair.bestdori.assets",
-  );
+export const ALTAIR_BESTDORI_ASSET_SERVICE = defineAltairService<AltairBestdoriAssetService>(
+  "haneoka.altair.bestdori.assets",
+);
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-const entryFile = (
-  files: readonly AltairSourceFile[],
-  entryPath?: string,
-): AltairSourceFile => {
-  const entry = entryPath
-    ? files.find(({ path }) => path === entryPath)
-    : files[0];
+const entryFile = (files: readonly AltairSourceFile[], entryPath?: string): AltairSourceFile => {
+  const entry = entryPath ? files.find(({ path }) => path === entryPath) : files[0];
   if (!entry) throw new RangeError("Bestdori format entry does not exist");
   return entry;
 };
@@ -53,20 +38,14 @@ const entryFile = (
 const record = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === "object" && !Array.isArray(value);
 
-const stringOption = (
-  options: JsonObject | undefined,
-  key: string,
-): string | undefined => {
+const stringOption = (options: JsonObject | undefined, key: string): string | undefined => {
   const value = options?.[key];
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
 };
 
 const assertActive = (signal: AbortSignal): void => {
   if (signal.aborted) {
-    throw (
-      signal.reason ??
-      new DOMException("Bestdori format operation aborted", "AbortError")
-    );
+    throw signal.reason ?? new DOMException("Bestdori format operation aborted", "AbortError");
   }
 };
 
@@ -129,12 +108,8 @@ export interface AltairBestdoriPluginOptions {
   readonly resources?: AltairBestdoriResourceProviderOptions;
 }
 
-export const createAltairBestdoriPlugin = (
-  options: AltairBestdoriPluginOptions = {},
-) => {
-  const resourceProvider = options.resources
-    ? createAltairBestdoriResourceProvider(options.resources)
-    : undefined;
+export const createAltairBestdoriPlugin = (options: AltairBestdoriPluginOptions = {}) => {
+  const resourceProvider = options.resources ? createAltairBestdoriResourceProvider(options.resources) : undefined;
   return defineAltairPlugin({
     manifest: {
       id: ALTAIR_BESTDORI_PLUGIN_ID,
@@ -151,10 +126,7 @@ export const createAltairBestdoriPlugin = (
       if (resourceProvider) {
         context.contribute("resource-browser", resourceProvider);
       }
-      context.provide(
-        ALTAIR_BESTDORI_ASSET_SERVICE,
-        altairBestdoriAssetService,
-      );
+      context.provide(ALTAIR_BESTDORI_ASSET_SERVICE, altairBestdoriAssetService);
     },
   });
 };

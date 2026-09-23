@@ -18,10 +18,7 @@ import {
   type BestdoriScenarioContext,
   type BestdoriScenarioConversion,
 } from "./bestdori-source/scenario.js";
-import {
-  resolveBestdoriServer,
-  type BestdoriServer,
-} from "./bestdori-source/transport.js";
+import { resolveBestdoriServer, type BestdoriServer } from "./bestdori-source/transport.js";
 
 export interface ImportBestdoriScenarioOptions {
   title?: string;
@@ -39,9 +36,7 @@ export interface ImportBestdoriScenarioOptions {
   resolveCostume?: BestdoriScenarioContext["resolveCostume"];
 }
 
-const sourceServer = (
-  options: ImportBestdoriScenarioOptions,
-): BestdoriServer =>
+const sourceServer = (options: ImportBestdoriScenarioOptions): BestdoriServer =>
   resolveBestdoriServer({
     server: options.server,
     locale: options.locale,
@@ -58,51 +53,35 @@ const projectFromConversion = (
 ): StoryProject => {
   const story = conversion.story;
   const sceneId = options.sceneId || `bestdori:${story.storyId}`;
-  const commands: StoryProjectCommand[] = story.commands.map(
-    (raw, sourceIndex) => {
-      const code =
-        typeof raw.command === "number" &&
-        Number.isSafeInteger(raw.command) &&
-        raw.command >= 0
-          ? raw.command
-          : 0;
-      const command = createStoryCommand(code, jsonFields(raw));
-      const commandSource = conversion.commandSources[sourceIndex];
-      command.id = importedStoryId("bestdori-scenario", sourceIndex);
-      command.source = {
-        format: "bestdori-scenario",
-        raw: JSON.stringify(raw),
-        ...(commandSource
-          ? {
-              command: commandSource.path,
-              arguments: {
-                ...(commandSource.snippetIndex === undefined
-                  ? {}
-                  : { snippetIndex: commandSource.snippetIndex }),
-                ...(commandSource.actionType === undefined
-                  ? {}
-                  : { actionType: commandSource.actionType }),
-                ...(commandSource.referenceIndex === undefined
-                  ? {}
-                  : { referenceIndex: commandSource.referenceIndex }),
-                ...(commandSource.note === undefined
-                  ? {}
-                  : { note: commandSource.note }),
-              },
-            }
-          : {}),
-      };
-      return command;
-    },
-  );
+  const commands: StoryProjectCommand[] = story.commands.map((raw, sourceIndex) => {
+    const code =
+      typeof raw.command === "number" && Number.isSafeInteger(raw.command) && raw.command >= 0 ? raw.command : 0;
+    const command = createStoryCommand(code, jsonFields(raw));
+    const commandSource = conversion.commandSources[sourceIndex];
+    command.id = importedStoryId("bestdori-scenario", sourceIndex);
+    command.source = {
+      format: "bestdori-scenario",
+      raw: JSON.stringify(raw),
+      ...(commandSource
+        ? {
+            command: commandSource.path,
+            arguments: {
+              ...(commandSource.snippetIndex === undefined ? {} : { snippetIndex: commandSource.snippetIndex }),
+              ...(commandSource.actionType === undefined ? {} : { actionType: commandSource.actionType }),
+              ...(commandSource.referenceIndex === undefined ? {} : { referenceIndex: commandSource.referenceIndex }),
+              ...(commandSource.note === undefined ? {} : { note: commandSource.note }),
+            },
+          }
+        : {}),
+    };
+    return command;
+  });
   const server = sourceServer(options);
   const project: StoryProject = {
     version: STORY_PROJECT_VERSION,
     meta: {
       title: options.title || story.storyId || "Bestdori scenario",
-      ...(options.releaseServer
-        ? { releaseServer: options.releaseServer }
-        : {}),
+      ...(options.releaseServer ? { releaseServer: options.releaseServer } : {}),
       provenance: {
         format: "bestdori-scenario",
         scenarioSceneId: story.storyId,
@@ -127,9 +106,7 @@ const projectFromConversion = (
         format: "bestdori-scenario",
         commandCount: commands.length,
         sourceServer: server,
-        rawScenario: cloneStoryValue(
-          conversion.sourceScenario as unknown as JsonObject,
-        ),
+        rawScenario: cloneStoryValue(conversion.sourceScenario as unknown as JsonObject),
       },
     },
   };
@@ -137,14 +114,9 @@ const projectFromConversion = (
   return project;
 };
 
-const diagnosticFidelity = (
-  code: string,
-): "exact" | "approximate" | "unsupported" => {
+const diagnosticFidelity = (code: string): "exact" | "approximate" | "unsupported" => {
   if (code.endsWith("Unsupported")) return "unsupported";
-  if (
-    code.endsWith("SourceViewerNoOp") ||
-    code === "scenario.talkAttachedActionNoOp"
-  ) {
+  if (code.endsWith("SourceViewerNoOp") || code === "scenario.talkAttachedActionNoOp") {
     return "exact";
   }
   return "approximate";
@@ -159,9 +131,7 @@ const convert = (
     server,
     voiceBundle: options.voiceBundle ?? "",
     proxify: options.proxify ?? ((path) => path),
-    ...(options.resolveCostume
-      ? { resolveCostume: options.resolveCostume }
-      : {}),
+    ...(options.resolveCostume ? { resolveCostume: options.resolveCostume } : {}),
   });
 };
 
@@ -194,5 +164,4 @@ export const importBestdoriScenario = (
  * Source scenarios are read-only. Export therefore emits Altair's canonical
  * project JSON instead of pretending to round-trip the upstream asset.
  */
-export const serializeBestdoriScenario = (project: StoryProject): string =>
-  JSON.stringify(project, null, 2);
+export const serializeBestdoriScenario = (project: StoryProject): string => JSON.stringify(project, null, 2);

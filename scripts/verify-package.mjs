@@ -1,14 +1,7 @@
 import { access, readFile, readdir } from "node:fs/promises";
 
-const manifest = JSON.parse(
-  await readFile(new URL("../package.json", import.meta.url), "utf8"),
-);
-for (const path of [
-  "dist/index.js",
-  "dist/index.d.ts",
-  "LICENSE",
-  "README.md",
-]) {
+const manifest = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+for (const path of ["dist/index.js", "dist/index.d.ts", "LICENSE", "README.md"]) {
   await access(new URL(`../${path}`, import.meta.url));
 }
 if (manifest.name !== "@haneoka/altair-plugin-bestdori") {
@@ -20,10 +13,7 @@ if (manifest.altair?.pluginApi !== 2 || manifest.altair?.kind !== "format") {
 if (!manifest.altair.capabilities?.includes("assets")) {
   throw new Error("Altair resource-browser capability is not declared");
 }
-if (
-  manifest.dependencies?.["@haneoka/bestdori"] ||
-  manifest.devDependencies?.["@haneoka/bestdori"]
-) {
+if (manifest.dependencies?.["@haneoka/bestdori"] || manifest.devDependencies?.["@haneoka/bestdori"]) {
   throw new Error("Package metadata still depends on Haneoka's Bestdori package");
 }
 const distFiles = await readdir(new URL("../dist/", import.meta.url));
@@ -37,10 +27,7 @@ const distSource = (
       .map((file) => readFile(new URL(`../dist/${file}`, import.meta.url), "utf8")),
   )
 ).join("\n");
-if (
-  distSource.includes("@haneoka/bestdori") ||
-  distSource.includes("our-notes/packages/bestdori")
-) {
+if (distSource.includes("@haneoka/bestdori") || distSource.includes("our-notes/packages/bestdori")) {
   throw new Error("Published output still depends on Haneoka's former Bestdori package");
 }
 for (const path of [

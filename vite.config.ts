@@ -16,6 +16,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       external: [
+        "@haneoka/vega-protocol/coordinates",
         "@haneoka/altair",
         "@haneoka/altair/plugins",
         "@haneoka/altair-plugin-adv",

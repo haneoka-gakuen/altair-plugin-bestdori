@@ -11,22 +11,7 @@ import {
 } from "./scene.js";
 import { isBestdoriServer, type BestdoriServer } from "./transport.js";
 
-const CMD = {
-  In: 0,
-  Out: 1,
-  Talk: 2,
-  FadeOut: 5,
-  FadeIn: 6,
-  Expression: 17,
-  Location: 20,
-  Motion: 21,
-  Character: 23,
-  Stage: 25,
-  Bgm: 15,
-  Se: 31,
-  MoveToDirection: 64,
-  CommandGroup: 500,
-} as const;
+import { ADV_COMMAND as CMD } from "@haneoka/altair-plugin-adv/commands";
 
 export interface BestdoriSnippet {
   actionType?: number;

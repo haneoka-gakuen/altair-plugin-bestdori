@@ -1,7 +1,4 @@
-import {
-  BESTDORI_BACKGROUND_STAGE_REF,
-  createBestdoriSceneRuntime,
-} from "./bestdori-source/scene.js";
+import { BESTDORI_BACKGROUND_STAGE_REF, createBestdoriSceneRuntime } from "./bestdori-source/scene.js";
 import { hasBestdoriCharacterIcon } from "./bestdori-source/resources.js";
 import {
   createBestdoriResourceBrowser,
@@ -14,8 +11,7 @@ import {
   type AltairBestdoriResourceProviderOptions,
 } from "./provider.js";
 
-export type BestdoriEditorAssetNode =
-  number | { readonly [name: string]: BestdoriEditorAssetNode };
+export type BestdoriEditorAssetNode = number | { readonly [name: string]: BestdoriEditorAssetNode };
 
 export interface BestdoriEditorAssetIndexResponse {
   readonly server: string;
@@ -54,10 +50,7 @@ export type BestdoriEditorResourceInsert =
       readonly value: Readonly<Record<string, unknown>>;
     };
 
-export type BestdoriAssetUrlResolver = (
-  rawPath: string,
-  server: string,
-) => string;
+export type BestdoriAssetUrlResolver = (rawPath: string, server: string) => string;
 
 const extension = (name: string): string =>
   name
@@ -65,9 +58,7 @@ const extension = (name: string): string =>
     ?.match(/\.([a-z0-9]+)$/iu)?.[1]
     ?.toLocaleLowerCase("en-US") ?? "";
 
-export const bestdoriEditorAssetMediaKind = (
-  name: string,
-): BestdoriEditorAssetMediaKind => {
+export const bestdoriEditorAssetMediaKind = (name: string): BestdoriEditorAssetMediaKind => {
   const suffix = extension(name);
   if (["png", "jpg", "jpeg", "webp", "gif"].includes(suffix)) {
     return "image";
@@ -107,11 +98,7 @@ const safePathPart = (value: string, label: string): string => {
   return result;
 };
 
-export const bestdoriEditorAssetRawPath = (
-  server: string,
-  bundlePath: readonly string[],
-  fileName: string,
-): string => {
+export const bestdoriEditorAssetRawPath = (server: string, bundlePath: readonly string[], fileName: string): string => {
   const region = safePathPart(server, "server");
   const bundle = bundlePath.map((part) => safePathPart(part, "bundle path"));
   const file = safePathPart(fileName, "file name");
@@ -159,9 +146,7 @@ export const bestdoriEditorAudioUsage = (
   return "se";
 };
 
-const commonResource = (
-  asset: BestdoriEditorAssetReference,
-): Readonly<Record<string, unknown>> => ({
+const commonResource = (asset: BestdoriEditorAssetReference): Readonly<Record<string, unknown>> => ({
   resourceRef: asset.rawPath,
   assetId: asset.rawPath,
   assetName: asset.fileName,
@@ -185,8 +170,7 @@ export const bestdoriEditorAudioResource = (
       resourceRef: asset.rawPath,
       soundId: asset.rawPath,
       cueName: asset.fileName,
-      categoryName:
-        usage === "bgm" ? "Bgm" : usage === "voice" ? "Voice" : "Se",
+      categoryName: usage === "bgm" ? "Bgm" : usage === "voice" ? "Voice" : "Se",
       playableUrl: asset.url,
       url: asset.url,
       sourcePath: asset.rawPath,
@@ -219,10 +203,7 @@ export const bestdoriEditorAssetResource = (
   }
   const kind =
     preferredKind ??
-    (asset.bundlePath[0] === "bg" ||
-    asset.bundlePath.slice(0, 2).join("/") === "story/bg"
-      ? "background"
-      : "still");
+    (asset.bundlePath[0] === "bg" || asset.bundlePath.slice(0, 2).join("/") === "story/bg" ? "background" : "still");
   if (kind !== "background") {
     return {
       kind,
@@ -261,13 +242,9 @@ export const bestdoriLive2dResource = (
   };
 };
 
-export const bestdoriLive2dCharacterIconPath = (
-  costumeId: string,
-): string | undefined => {
+export const bestdoriLive2dCharacterIconPath = (costumeId: string): string | undefined => {
   const characterId = Number(costumeId.match(/^(\d+)/u)?.[1]);
-  return hasBestdoriCharacterIcon(characterId)
-    ? `/res/icon/chara_icon_${characterId}.png`
-    : undefined;
+  return hasBestdoriCharacterIcon(characterId) ? `/res/icon/chara_icon_${characterId}.png` : undefined;
 };
 
 export const bestdoriLive2dCharacterIcon = (
@@ -286,22 +263,17 @@ export interface AltairBestdoriAssetService {
   readonly resource: typeof bestdoriEditorAssetResource;
   readonly live2dResource: typeof bestdoriLive2dResource;
   readonly live2dCharacterIcon: typeof bestdoriLive2dCharacterIcon;
-  readonly createBrowser: (
-    adapter: BestdoriResourceBrowserAdapter,
-  ) => AltairBestdoriResourceBrowser;
-  readonly createProvider: (
-    options: AltairBestdoriResourceProviderOptions,
-  ) => AltairBestdoriResourceProvider;
+  readonly createBrowser: (adapter: BestdoriResourceBrowserAdapter) => AltairBestdoriResourceBrowser;
+  readonly createProvider: (options: AltairBestdoriResourceProviderOptions) => AltairBestdoriResourceProvider;
 }
 
-export const altairBestdoriAssetService: AltairBestdoriAssetService =
-  Object.freeze({
-    mediaKind: bestdoriEditorAssetMediaKind,
-    nodeAt: bestdoriEditorAssetNodeAt,
-    reference: bestdoriEditorAssetReference,
-    resource: bestdoriEditorAssetResource,
-    live2dResource: bestdoriLive2dResource,
-    live2dCharacterIcon: bestdoriLive2dCharacterIcon,
-    createBrowser: createBestdoriResourceBrowser,
-    createProvider: createAltairBestdoriResourceProvider,
-  });
+export const altairBestdoriAssetService: AltairBestdoriAssetService = Object.freeze({
+  mediaKind: bestdoriEditorAssetMediaKind,
+  nodeAt: bestdoriEditorAssetNodeAt,
+  reference: bestdoriEditorAssetReference,
+  resource: bestdoriEditorAssetResource,
+  live2dResource: bestdoriLive2dResource,
+  live2dCharacterIcon: bestdoriLive2dCharacterIcon,
+  createBrowser: createBestdoriResourceBrowser,
+  createProvider: createAltairBestdoriResourceProvider,
+});
