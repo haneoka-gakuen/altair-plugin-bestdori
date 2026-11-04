@@ -18,6 +18,8 @@ import {
   type BestdoriScenarioContext,
   type BestdoriScenarioConversion,
 } from "./bestdori-source/scenario.js";
+import { convertSekaiScenario } from "./bestdori-source/sekai.js";
+import type { BestdoriInput } from "./bestdori-source/input.js";
 import { resolveBestdoriServer, type BestdoriServer } from "./bestdori-source/transport.js";
 
 export interface ImportBestdoriScenarioOptions {
@@ -48,19 +50,20 @@ const jsonFields = (command: BestdoriAdvCommand): JsonObject => {
 };
 
 const projectFromConversion = (
-  conversion: BestdoriScenarioConversion,
+  conversion: Omit<BestdoriScenarioConversion, "sourceScenario"> & { sourceScenario: unknown },
   options: ImportBestdoriScenarioOptions,
+  format = "bestdori-scenario",
 ): StoryProject => {
   const story = conversion.story;
-  const sceneId = options.sceneId || `bestdori:${story.storyId}`;
+  const sceneId = options.sceneId || `${format === "sekai-scenario" ? "sekai" : "bestdori"}:${story.storyId}`;
   const commands: StoryProjectCommand[] = story.commands.map((raw, sourceIndex) => {
     const code =
       typeof raw.command === "number" && Number.isSafeInteger(raw.command) && raw.command >= 0 ? raw.command : 0;
     const command = createStoryCommand(code, jsonFields(raw));
     const commandSource = conversion.commandSources[sourceIndex];
-    command.id = importedStoryId("bestdori-scenario", sourceIndex);
+    command.id = importedStoryId(format, sourceIndex);
     command.source = {
-      format: "bestdori-scenario",
+      format,
       raw: JSON.stringify(raw),
       ...(commandSource
         ? {
@@ -83,7 +86,7 @@ const projectFromConversion = (
       title: options.title || story.storyId || "Bestdori scenario",
       ...(options.releaseServer ? { releaseServer: options.releaseServer } : {}),
       provenance: {
-        format: "bestdori-scenario",
+        format,
         scenarioSceneId: story.storyId,
         sourceServer: server,
         ...(options.provenance ?? {}),
@@ -103,7 +106,7 @@ const projectFromConversion = (
     storyFields: { storyId: story.storyId },
     extensions: {
       source: {
-        format: "bestdori-scenario",
+        format,
         commandCount: commands.length,
         sourceServer: server,
         rawScenario: cloneStoryValue(conversion.sourceScenario as unknown as JsonObject),
@@ -165,3 +168,22 @@ export const importBestdoriScenario = (
  * project JSON instead of pretending to round-trip the upstream asset.
  */
 export const serializeBestdoriScenario = (project: StoryProject): string => JSON.stringify(project, null, 2);
+
+export function importSekaiScenario(
+  input: BestdoriInput,
+  options: ImportBestdoriScenarioOptions = {},
+): StoryImportResult {
+  const conversion = convertSekaiScenario(input, {
+    server: options.server ?? "jp",
+    voiceBundle: options.voiceBundle ?? "",
+    proxify: options.proxify ?? ((source) => source),
+    ...(options.resolveCostume ? { resolveCostume: options.resolveCostume } : {}),
+  });
+  return {
+    format: "sekai-scenario",
+    project: projectFromConversion(conversion, options, "sekai-scenario"),
+    diagnostics: conversion.diagnostics.map((issue) =>
+      storyDiagnostic(issue.severity, `sekai.${issue.code}`, issue.path, issue.message, diagnosticFidelity(issue.code)),
+    ),
+  };
+}

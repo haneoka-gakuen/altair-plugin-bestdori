@@ -5,6 +5,8 @@ packages:
   - ".dependencies/vega"
   - ".dependencies/vega/packages/protocol"
 
+  - ".dependencies/vega-plugin-haneoka"
+
 linkWorkspacePackages: true
 
 allowBuilds:

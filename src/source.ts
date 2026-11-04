@@ -5,3 +5,5 @@ export * from "./bestdori-source/resources.js";
 export * from "./bestdori-source/scenario.js";
 export * from "./bestdori-source/scene.js";
 export * from "./bestdori-source/transport.js";
+
+export * from "./bestdori-source/sekai.js";

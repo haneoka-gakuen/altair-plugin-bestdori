@@ -11,7 +11,8 @@ import {
 } from "./scene.js";
 import { isBestdoriServer, type BestdoriServer } from "./transport.js";
 
-import { ADV_COMMAND as CMD } from "@haneoka/altair-plugin-adv/commands";
+import { VEGA_ADV_OPCODE, VEGA_COMMAND_GROUP_OPCODE } from "@haneoka/vega-protocol";
+const CMD = { ...VEGA_ADV_OPCODE, CommandGroup: VEGA_COMMAND_GROUP_OPCODE };
 
 export interface BestdoriSnippet {
   actionType?: number;

@@ -7,10 +7,11 @@ import {
 } from "@haneoka/altair/plugins";
 import { altairBestdoriAssetService, type AltairBestdoriAssetService } from "./assets.js";
 import { createAltairBestdoriResourceProvider, type AltairBestdoriResourceProviderOptions } from "./provider.js";
-import { importBestdoriScenario, serializeBestdoriScenario } from "./story-project.js";
+import { importBestdoriScenario, importSekaiScenario, serializeBestdoriScenario } from "./story-project.js";
 
 export {
   importBestdoriScenario,
+  importSekaiScenario,
   parseBestdoriScenario,
   serializeBestdoriScenario,
   type ImportBestdoriScenarioOptions,
@@ -19,6 +20,7 @@ export * from "./assets.js";
 export * from "./resource-browser.js";
 export * from "./provider.js";
 export * from "./source.js";
+export * from "./community.js";
 
 export const ALTAIR_BESTDORI_PLUGIN_ID = "haneoka.altair-bestdori" as const;
 export const ALTAIR_BESTDORI_FORMAT_ID = "bestdori-scenario" as const;
@@ -100,6 +102,31 @@ export const altairBestdoriFormat = Object.freeze({
   },
 } satisfies AltairFormatContribution);
 
+export const altairSekaiFormat = Object.freeze({
+  ...altairBestdoriFormat,
+  id: "sekai-scenario",
+  name: "Project SEKAI scenario",
+  sniff(request) {
+    assertActive(request.signal);
+    try {
+      return Array.isArray(
+        (JSON.parse(decoder.decode(entryFile(request.files, request.entryPath).bytes)) as Record<string, unknown>)
+          .Snippets,
+      )
+        ? 1
+        : 0;
+    } catch {
+      return 0;
+    }
+  },
+  import(request) {
+    assertActive(request.signal);
+    return importSekaiScenario(entryFile(request.files, request.entryPath).bytes, {
+      ...(stringOption(request.options, "title") ? { title: stringOption(request.options, "title")! } : {}),
+    });
+  },
+} satisfies AltairFormatContribution);
+
 export interface AltairBestdoriPluginOptions {
   /**
    * Enables the neutral resource-browser contribution. Transport remains
@@ -123,6 +150,7 @@ export const createAltairBestdoriPlugin = (options: AltairBestdoriPluginOptions 
     },
     setup(context) {
       context.contribute("format", altairBestdoriFormat);
+      context.contribute("format", altairSekaiFormat);
       if (resourceProvider) {
         context.contribute("resource-browser", resourceProvider);
       }
