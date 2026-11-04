@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@haneoka/vega-plugin-haneoka':
+        specifier: ^0.1.0
+        version: link:.dependencies/vega-plugin-haneoka
       '@haneoka/vega-protocol':
         specifier: ^0.1.0
         version: link:.dependencies/vega/packages/protocol

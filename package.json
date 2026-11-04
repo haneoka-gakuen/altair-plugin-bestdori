@@ -55,7 +55,47 @@
       "import": "./dist/source.js",
       "default": "./dist/source.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./diagnostics": {
+      "types": "./dist/bestdori-source/diagnostics.d.ts",
+      "import": "./dist/diagnostics.js",
+      "default": "./dist/diagnostics.js"
+    },
+    "./input": {
+      "types": "./dist/bestdori-source/input.d.ts",
+      "import": "./dist/input.js",
+      "default": "./dist/input.js"
+    },
+    "./live2d": {
+      "types": "./dist/bestdori-source/live2d.d.ts",
+      "import": "./dist/live2d.js",
+      "default": "./dist/live2d.js"
+    },
+    "./resources": {
+      "types": "./dist/bestdori-source/resources.d.ts",
+      "import": "./dist/resources.js",
+      "default": "./dist/resources.js"
+    },
+    "./scenario": {
+      "types": "./dist/bestdori-source/scenario.d.ts",
+      "import": "./dist/scenario.js",
+      "default": "./dist/scenario.js"
+    },
+    "./scene": {
+      "types": "./dist/bestdori-source/scene.d.ts",
+      "import": "./dist/scene.js",
+      "default": "./dist/scene.js"
+    },
+    "./transport": {
+      "types": "./dist/bestdori-source/transport.d.ts",
+      "import": "./dist/transport.js",
+      "default": "./dist/transport.js"
+    },
+    "./sekai": {
+      "types": "./dist/bestdori-source/sekai.d.ts",
+      "import": "./dist/sekai.js",
+      "default": "./dist/sekai.js"
+    }
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json",
@@ -107,6 +147,7 @@
     ]
   },
   "dependencies": {
-    "@haneoka/vega-protocol": "^0.1.0"
+    "@haneoka/vega-protocol": "^0.1.0",
+    "@haneoka/vega-plugin-haneoka": "^0.1.0"
   }
 }

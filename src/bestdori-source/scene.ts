@@ -1,4 +1,6 @@
-import { DEFAULT_SCENE_GEOMETRY, scenePlaneSize, scenePointFromNdc } from "@haneoka/vega-protocol/coordinates";
+import { scenePlaneSize, scenePointFromNdc } from "@haneoka/vega-protocol/coordinates";
+import { DEFAULT_SCENE_GEOMETRY } from "@haneoka/vega-plugin-haneoka/scene-profile";
+export const BESTDORI_SCENE_CALIBRATION = DEFAULT_SCENE_GEOMETRY;
 
 /** Pure scene geometry used by the scenario adapter. */
 
